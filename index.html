@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css" />
+    <title>Flaggle</title>
+</head>
+
+<body>
+    <h1>Flaggle</h1>
+    <div class="country-name">
+        <span id="country-name"></span><button onclick="changeCountry()">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-refresh" width="20" height="20"
+                viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round"
+                stroke-linejoin="round">
+                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                <path d="M20 11a8.1 8.1 0 0 0 -15.5 -2m-.5 -4v4h4"></path>
+                <path d="M4 13a8.1 8.1 0 0 0 15.5 2m.5 4v-4h-4"></path>
+            </svg></button>
+        <br>
+    </div>
+    <div class="flag-container" id="flags-container"></div>
+
+    <footer id="footer"></footer>
+
+    <script src="script.js"></script>
+    <script src="footer.js"></script>
+</body>
+
+</html>
