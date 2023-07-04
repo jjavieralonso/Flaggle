@@ -14,6 +14,7 @@ var filteredCountries = [
 
 var countries = filteredCountries;
 var currentCountry = null;
+var aciertos = 0;
 
 fetch('https://restcountries.com/v3.1/all')
     .then(response => response.json())
@@ -59,6 +60,7 @@ function displayFlags() {
     });
 }
 
+
 function displayCountryName(countryName) {
     var countryNameElement = document.getElementById('country-name');
     countryNameElement.textContent = countryName;
@@ -73,9 +75,18 @@ function checkGuess(guess) {
 }
 
 function win() {
+    aciertos++;
+    var countryIndex = countries.findIndex(country => country.name.common === currentCountry); // encuentra el indice del pais adivinado en la lista "countries"
+    if (countryIndex !== -1) {
+        countries.splice(countryIndex, 1); // elimina el pais adivinado de la lista "countries"
+    }
+
     verificar(true);
     changeCountry();
+    displayCountryName(currentCountry);
+    displayFlags(); // actualiza la lista de banderas
 }
+
 
 function lose() {
     verificar(false);
@@ -94,15 +105,15 @@ function verificar(value) {
     notificacion.classList = 'notification';
 
     if (esCorrecto) {
-        notificacion.innerHTML += 'bien!';
+        notificacion.innerHTML += 'bien! Aciertos: ' + aciertos;
         notificacion.className = 'notification success';
     } else {
-        notificacion.innerHTML += 'mal :(, volve a intentar';
+        notificacion.innerHTML += 'mal :(, volve a intentar. Aciertos: ' + aciertos;
         notificacion.className = 'notification error';
     }
     document.body.appendChild(notificacion);
     setTimeout(function () {
         notificacion.style.display = 'none';
-    }, 2000); //Despues de 2 seg desaparece la notificacion.
+    }, 2000); //Después de 2 seg desaparece la notificación.
 }
 
