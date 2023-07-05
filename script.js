@@ -14,13 +14,13 @@ var filteredCountries = [
 
 var countries = filteredCountries;
 var currentCountry = null;
-var aciertos = 0;
+const spanCorrectGuesses = document.getElementById('correctGuesses');
+var correctGuesses = 0;
 
 fetch('https://restcountries.com/v3.1/all')
     .then(response => response.json())
     .then(data => {
         countries = data.filter(country => filteredCountries.includes(country.name.common));
-
         startGame();
     })
     .catch(error => {
@@ -39,7 +39,8 @@ function getRandomCountry() {
     return countries[Math.floor(Math.random() * countries.length)].name.common;
 }
 
-function displayFlags() {
+function displayFlags() { //lista las banderas y tambien actualiza la cantidad de paises acertados.
+    spanCorrectGuesses.textContent = 'Paises acertados = ' + correctGuesses + '/103';
     var flagsContainer = document.getElementById('flags-container');
     flagsContainer.innerHTML = '';
 
@@ -60,7 +61,6 @@ function displayFlags() {
     });
 }
 
-
 function displayCountryName(countryName) {
     var countryNameElement = document.getElementById('country-name');
     countryNameElement.textContent = countryName;
@@ -74,19 +74,54 @@ function checkGuess(guess) {
     }
 }
 
+var startTime;
+var timerInterval;
+
+function startTimer() {
+    startTime = Date.now();
+    timerInterval = setInterval(updateTimer, 1000);
+}
+
+function updateTimer() {
+    var currentTime = Date.now() - startTime;
+    var hours = Math.floor(currentTime / (1000 * 60 * 60));
+    var minutes = Math.floor((currentTime % (1000 * 60 * 60)) / (1000 * 60));
+    var seconds = Math.floor((currentTime % (1000 * 60)) / 1000);
+
+    var timeString = formatTime(hours) + ":" + formatTime(minutes) + ":" + formatTime(seconds);
+
+    document.getElementById('timer').textContent = timeString;
+}
+
+function formatTime(time) {
+    return time.toString().padStart(2, '0');
+}
+
+function stopTimer() {
+    clearInterval(timerInterval);
+}
+
 function win() {
-    aciertos++;
-    var countryIndex = countries.findIndex(country => country.name.common === currentCountry); // encuentra el indice del pais adivinado en la lista "countries"
+    correctGuesses++;
+    var countryIndex = countries.findIndex(country => country.name.common === currentCountry);
     if (countryIndex !== -1) {
-        countries.splice(countryIndex, 1); // elimina el pais adivinado de la lista "countries"
+        countries.splice(countryIndex, 1);
     }
 
     verificar(true);
-    changeCountry();
-    displayCountryName(currentCountry);
-    displayFlags(); // actualiza la lista de banderas
+    if (countries.length === 0) {
+        stopTimer();
+        var notificacion = document.createElement('div');
+        notificacion.innerHTML = 'Felicitaciones por ganar!!';
+        notificacion.classList = 'notification';
+        notificacion.className = 'notification success';
+    } else {
+        changeCountry();
+        displayCountryName(currentCountry);
+        displayFlags();
+    }
 }
-
+startTimer();
 
 function lose() {
     verificar(false);
@@ -105,10 +140,10 @@ function verificar(value) {
     notificacion.classList = 'notification';
 
     if (esCorrecto) {
-        notificacion.innerHTML += 'bien! Aciertos: ' + aciertos;
+        notificacion.innerHTML += 'bien!';
         notificacion.className = 'notification success';
     } else {
-        notificacion.innerHTML += 'mal :(, volve a intentar. Aciertos: ' + aciertos;
+        notificacion.innerHTML += 'mal :(, volve a intentar.';
         notificacion.className = 'notification error';
     }
     document.body.appendChild(notificacion);
@@ -116,4 +151,3 @@ function verificar(value) {
         notificacion.style.display = 'none';
     }, 2000); //Después de 2 seg desaparece la notificación.
 }
-

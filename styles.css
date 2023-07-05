@@ -7,7 +7,9 @@
 body {
     background-color: #333;
 }
-
+a{
+    color: white;
+}
 h1 {
     text-align: center;
     color: white;
@@ -72,4 +74,14 @@ button {
 .error {
     background-color: red;
     color: white;
+}
+
+#country-name {
+    font-size: 34px;
+}
+
+@media only screen and (max-width: 700px) {
+    .flag-container {
+        grid-template-columns: repeat(3, 1fr);
+    }
 }
