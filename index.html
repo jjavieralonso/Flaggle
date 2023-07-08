@@ -38,6 +38,13 @@
             <path d="M3 13a20 20 0 0 0 18 0"></path>
         </svg></a>
     <h1>Flaggle</h1>
+    <div class="game-difficulty">
+        <select id="select-difficulty" onchange="startGame()">
+            <option value="easy">Fácil</option>
+            <option value="hard">Difícil</option>
+        </select>
+        <button id="startGame">Comenzar juego</button>
+    </div>
     <div class="country-name">
         <span id="country-name"></span><button onclick="changeCountry()">
             <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-refresh" width="20" height="20"
@@ -48,12 +55,20 @@
                 <path d="M4 13a8.1 8.1 0 0 0 15.5 2m.5 4v-4h-4"></path>
             </svg></button>
         <br>
-        <span id="correctGuesses"></span>
+        <span id="correctGuesses" style="color: rgb(79, 190, 79);"></span>
+        <br>
+        <span id="incorrectGuesses" style="color: rgb(190, 79, 79);"></span>
         <br>
         <span id="timer">00:00:00</span>
     </div>
     <div class="flag-container" id="flags-container"></div>
 
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <span id="modal-time"></span>
+            <span id="modal-accuracy"></span>
+        </div>
+    </div>
     <script src="script.js"></script>
 </body>
 

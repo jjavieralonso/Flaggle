@@ -1,4 +1,9 @@
-var filteredCountries = [
+var filteredCountriesEasy = [
+    'Germany', 'Argentina', 'Australia', 'Brazil', 'Canada', 'China', 'France', 'India', 'Italy', 'Japan', 'Mexico', 'Netherlands', 'Russia', 
+    'South Africa', 'Spain', 'Sweden', 'Switzerland', 'Turkey', 'United Kingdom', 'United States', 'Belgium', 'Bolivia', 'Uruguay', 'Nigeria', 'Ivory Coast'
+];
+
+var filteredCountriesHard = [
     'Albania', 'Germany', 'Angola', 'Saudi Arabia', 'Algeria', 'Argentina', 'Australia', 'Austria', 'Bangladesh', 'Belarus',
     'Myanmar', 'Bolivia', 'Bosnia and Herzegovina', 'Brazil', 'Bulgaria', 'Belgium', 'Cameroon', 'Canada', 'Chile', 'China',
     'Colombia', 'North Korea', 'South Korea', 'Costa Rica', 'Ivory Coast', 'Croatia', 'Cuba', 'Denmark', 'Ecuador',
@@ -12,22 +17,38 @@ var filteredCountries = [
     'Venezuela', 'Vietnam', 'Zambia', 'Zimbabwe', 'Democratic Republic of the Congo'
 ];
 
-var countries = filteredCountries;
+var countries = [];
 var currentCountry = null;
 const spanCorrectGuesses = document.getElementById('correctGuesses');
+const spanIncorrectGuesses = document.getElementById('incorrectGuesses');
 var correctGuesses = 0;
+var incorrectGuesses = 0;
 
-fetch('https://restcountries.com/v3.1/all')
-    .then(response => response.json())
-    .then(data => {
-        countries = data.filter(country => filteredCountries.includes(country.name.common));
-        startGame();
-    })
-    .catch(error => {
-        console.log('Error:', error);
-    });
+document.getElementById('startGame').addEventListener('click', function () {
+    var gameDifficulty = document.getElementById('select-difficulty').value;
+    fetch('https://restcountries.com/v3.1/all')
+        .then(response => response.json())
+        .then(data => {
+            if (gameDifficulty === 'easy') {
+                countries = data.filter(country => filteredCountriesEasy.includes(country.name.common));
+            } else if (gameDifficulty === 'hard') {
+                countries = data.filter(country => filteredCountriesHard.includes(country.name.common));
+            }
+            startGame();
+            startTimer();
+        })
+        .catch(error => {
+            console.log('Error:', error);
+        });
+})
 
-function startGame() {
+function startGame(difficulty) {
+    if (difficulty === 'easy') {
+        countries = filteredCountriesEasy
+    } else if (difficulty === 'hard') {
+        countries = filteredCountriesHard;
+    }
+
     currentCountry = getRandomCountry();
 
     displayFlags();
@@ -39,8 +60,13 @@ function getRandomCountry() {
     return countries[Math.floor(Math.random() * countries.length)].name.common;
 }
 
-function displayFlags() { //lista las banderas y tambien actualiza la cantidad de paises acertados.
-    spanCorrectGuesses.textContent = 'Paises acertados = ' + correctGuesses + '/103';
+function displayFlags() {
+    if (document.getElementById('select-difficulty').value === 'easy') {
+        spanCorrectGuesses.textContent = 'Paises acertados = ' + correctGuesses + '/25';
+    } else {
+        spanCorrectGuesses.textContent = 'Paises acertados = ' + correctGuesses + '/103';
+    }
+    spanIncorrectGuesses.textContent = 'Errores = ' + incorrectGuesses;
     var flagsContainer = document.getElementById('flags-container');
     flagsContainer.innerHTML = '';
 
@@ -111,23 +137,28 @@ function win() {
     verificar(true);
     if (countries.length === 0) {
         stopTimer();
-        var notificacion = document.createElement('div');
-        notificacion.innerHTML = 'Felicitaciones por ganar!!';
-        notificacion.classList = 'notification';
-        notificacion.className = 'notification success';
+        var totalTime = document.getElementById('timer').textContent;
+        var accuracy = (correctGuesses / (correctGuesses + incorrectGuesses)) * 100;
+        var modalTime = document.getElementById('modal-time');
+        var modalAccuracy = document.getElementById('modal-accuracy');
+
+        modalTime.textContent = 'Tiempo: ' + totalTime;
+        modalAccuracy.textContent = 'Precisión: ' + accuracy.toFixed(2) + '%';
+
+        var modal = document.getElementById('modal');
+        modal.style.display = 'block';
     } else {
         changeCountry();
         displayCountryName(currentCountry);
         displayFlags();
     }
 }
-startTimer();
 
 function lose() {
     verificar(false);
 }
 
-function changeCountry() { // funcion para cambiar el pais a adivinar
+function changeCountry() {
     currentCountry = getRandomCountry();
     displayCountryName(currentCountry);
 }
@@ -145,9 +176,11 @@ function verificar(value) {
     } else {
         notificacion.innerHTML += 'mal :(, volve a intentar.';
         notificacion.className = 'notification error';
+        incorrectGuesses++;
+        spanIncorrectGuesses.textContent = 'Errores = ' + incorrectGuesses;
     }
     document.body.appendChild(notificacion);
     setTimeout(function () {
         notificacion.style.display = 'none';
-    }, 2000); //Después de 2 seg desaparece la notificación.
+    }, 2000);
 }
