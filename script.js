@@ -34,6 +34,8 @@ document.getElementById('startGame').addEventListener('click', function () {
             } else if (gameDifficulty === 'hard') {
                 countries = data.filter(country => filteredCountriesHard.includes(country.name.common));
             }
+            correctGuesses = 0;
+            incorrectGuesses = 0;
             startGame();
             startTimer();
         })
@@ -183,4 +185,8 @@ function verificar(value) {
     setTimeout(function () {
         notificacion.style.display = 'none';
     }, 2000);
+}
+function closeModal(){
+    var modal = document.getElementById('modal');
+    modal.style.display = 'none';
 }
